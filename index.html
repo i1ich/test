@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+    <title>test</title>
+</head>
+<body>
+<input id="m" autocomplete="off"/>
+<button onclick="f1()">Send</button>
+<table width="100" height="100" bgcolor="red">
+    <tr bgcolor="black">
+        <td onclick="f2(1)" id="1"></td>
+        <td onclick="f2(2)" id="2"></td>
+        <td onclick="f2(3)" id="3"></td>
+    </tr>
+    <tr bgcolor="black">
+        <td onclick="f2(4)" id="4"></td>
+        <td onclick="f2(5)" id="5"></td>
+        <td onclick="f2(6)" id="6"></td>
+    </tr>
+    <tr bgcolor="black">
+        <td onclick="f2(7)" id="7"></td>
+        <td onclick="f2(8)" id="8"></td>
+        <td onclick="f2(9)" id="9"></td>
+    </tr>
+</table>
+<ul id="messages" type="none" dir="rtl"></ul>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+    var socket = io();
+    var field = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
+    var IsRegister = 0;
+    var Name;
+    var Number;
+    var NN;
+    var CellNumCol;
+
+    function f1() {
+        if (!IsRegister) {
+
+            Name = $('#m').val();
+            socket.emit('n_user', Name);
+            $('#m').val('');
+            IsRegister = 1;
+        }
+    }
+    function f2(num) {
+        alert(String(num) + "," + Number);
+        socket.emit('turn1', String(num) + "," + Number);
+    }
+    function Checkfield(cell) {
+        if (field[cell] === field[(cell + 3) % 9] && field[cell] === field[(cell + 6) % 9] && field[cell] != -1) {
+            alert(String(field[cell]) + " win1");
+            return;
+        }
+        var a = cell > 2 && cell > 5;
+        if (field[a * 3] === field[a * 3 + 1] && field[a * 3] === field[a * 3 + 2] && field[a * 3] != -1) {
+            alert(String(field[cell]) + " win2");
+            ClearField();
+        }
+        if (field[cell] === field[(cell + 3) % 9] && field[cell] === field[(cell + 6) % 9] && field[cell] != -1) {
+            alert(String(field[cell]) + " win3");
+            ClearField();
+        }
+        if (field[0] === field[4] && field[4] === field[8] && field[4] != -1) {
+            alert(String(field[0]) + " win4");
+            ClearField();
+        }
+        if (field[2] === field[4] && field[4] === field[6] && field[4] != -1) {
+            alert(String(field[2]) + " win5");
+            ClearField();
+        }
+        if (field[0] != -1 && field[1] != -1 && field[2] != -1 &&
+                field[3] != -1 && field[4] != -1 && field[5] != -1 &&
+                field[6] != -1 && field[7] != -1 && field[8] != -1) {
+            alert("Draw");
+            ClearField();
+        }
+
+    }
+    function ClearField() {
+        var i;
+        for (i = 1; i <= 9; i++) {
+            $('#' + String(i)).css("background-color", "black");
+            field[i - 1] = -1
+        }
+
+    }
+    socket.on('shoot', function (msg) {
+        $('#messages').append($('<li>').text(msg));
+    });
+    socket.on('n_user', function (msg) {
+        NN = msg.split(',');
+        alert("Your name is " + msg);
+        if (NN[0] == Name)
+            Number = NN[1];
+    });
+    socket.on('turn1', function (msg) {
+        alert("Turn" + msg);
+        CellNumCol = msg.split(',');
+        if (field[Number(CellNumCol[0])] == -1)
+            field[Number(CellNumCol[0])] = CellNumCol[1];
+        $('#' + String(Number(CellNumCol[1]) + 1)).css("background-color", CellNumCol[2]);
+        Checkfield(Number(CellNumCol[0]));
+
+    });
+
+</script>
+</body>
+</html>
