@@ -23,8 +23,9 @@
         <td onclick="f2(9)" id="9"></td>
     </tr>
 </table>
+<p id="debug" dir = "rtl" style="color: #0004ff; font-size: 2em" >...</p>
 <ul id="messages" type="none" dir="rtl"></ul>
-<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
     var socket = io();
@@ -34,6 +35,7 @@
     var Number;
     var NN;
     var CellNumCol;
+    var debugInfo = "";
 
     function f1() {
         if (!IsRegister) {
@@ -45,7 +47,7 @@
         }
     }
     function f2(num) {
-        alert(String(num) + "," + Number);
+        debug.innerHTML += "<br>" + String(num) + "," + Number;
         socket.emit('turn1', String(num) + "," + Number);
     }
     function Checkfield(cell) {
@@ -89,14 +91,19 @@
     socket.on('shoot', function (msg) {
         $('#messages').append($('<li>').text(msg));
     });
+    socket.on('debug', function (msg) {
+        debug.innerHTML += "<br>" + "debug: " + msg;
+    });
     socket.on('n_user', function (msg) {
         NN = msg.split(',');
-        alert("Your name is " + msg);
-        if (NN[0] == Name)
+        if (NN[0] == Name) {
+            debug.innerHTML += "<br>" + "New user: " + msg;
             Number = NN[1];
+        }
     });
     socket.on('turn1', function (msg) {
-        alert("Turn" + msg);
+        debug.innerHTML += "<br>" + "Turn" + msg;
+        //$('#9').css("background-color", "white");
         CellNumCol = msg.split(',');
         if (field[Number(CellNumCol[0])] == -1)
             field[Number(CellNumCol[0])] = CellNumCol[1];
