@@ -179,11 +179,11 @@ int main( int argc, const char *argv[] )
         s1 = s;
         
         // print no format str
-        fprintf(stdout, "%s == ", s);
+    ///111   fprintf(stdout, "%s == ", s);
         // format it
         for (i = 0; i < cur; i++)
         {
-          if (s[i] == '-')
+          /*if (s[i] == '-')
           {
             format[curf] = '-';
             curf++;
@@ -193,14 +193,14 @@ int main( int argc, const char *argv[] )
             curf++;
           } 
           else
-          {
+          {*/
             format[curf] = s[i];
             curf++;
-          }
+        //  }
         }
         // calculate
-        ans = 3;//Comp(format, curf, 1, &format, &error);
-        if (error != 1)
+        ans = Comp(format, curf, /*1,*/ &format, &error);
+          if (error != 1)
           fprintf(stdout, "%g\n", ans);
         free(format1);
       }
@@ -211,7 +211,7 @@ int main( int argc, const char *argv[] )
       if (c != EOF)
         fprintf(stdout, "%s\n", s);
     }
-    if (c == EOF)
+      if (c == EOF)
       break;
   }
   if (argc == 2)
